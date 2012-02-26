@@ -28,7 +28,7 @@ public class SearchVisitReducer extends Reducer<Text, MyMapWritable, Text, Text>
   protected void setup(Context context) throws IOException, InterruptedException
   {
     text_key = new Text();
-    text_value = new Text();
+    text_value = new Text("");
     visits = new TreeMap<String,MyMapWritable>();
     super.setup(context);
   }
@@ -36,32 +36,36 @@ public class SearchVisitReducer extends Reducer<Text, MyMapWritable, Text, Text>
   @Override
   public void reduce(Text reduceKey, Iterable<MyMapWritable> reduceValue, Context context) throws IOException, InterruptedException
   {
+    int i = 0;
     visits.clear();
-    boolean google_visit = false;
     Iterator<MyMapWritable> it = reduceValue.iterator();
-
-    while (it.hasNext()) {
+    while (it.hasNext()) { //Sorting data by timestamp
       MyMapWritable v = new MyMapWritable( it.next() );
       visits.put(v.get(LogParser.TS).toString(), v);
-      if(v.containsKey(LogParser.GOOGLE_QUERY)){ google_visit = true; }
     }
-    
-    if(google_visit){
-      int pageViews = 0;
-      for(String ts : visits.keySet()){
-        MyMapWritable v = visits.get(ts);
-        if(v.containsKey(LogParser.GOOGLE_QUERY)){
-          if(pageViews > 0){
-            text_key.clear();
-            text_value.clear();
-            v.put(LogParser.PAGE_VIEWS, new Text(String.valueOf( pageViews )));
-            text_key.set(v.toString());
-            text_value.set("");
-            context.write(text_key, text_value);
-            pageViews = 0;
-          }
-        }
-        pageViews++;
+
+    Map<Integer,MyMapWritable> googleVisits = new TreeMap<Integer,MyMapWritable>();
+    for (String ts : visits.keySet()) {
+      MyMapWritable v = visits.get(ts);
+      if(v.containsKey(LogParser.GOOGLE_QUERY)){ //Visit from google
+        v.put(LogParser.PAGE_VIEWS, new Text("1"));
+        googleVisits.put(i, v);
+        i++;
+      }
+      else if (i >= 1){ //Regular visit (after a visit from google)
+        MyMapWritable googleVisit = googleVisits.get(i-1);
+        int pageViews = Integer.parseInt( googleVisit.get(LogParser.PAGE_VIEWS).toString() );
+        pageViews ++;
+        googleVisit.put(LogParser.PAGE_VIEWS, new Text( String.valueOf( pageViews ) ));
+        googleVisits.put(i-1, googleVisit);
+      }
+    }
+
+    if(googleVisits.size()>0){
+      for (Integer index : googleVisits.keySet()) {
+        text_key.clear();
+        text_key.set(googleVisits.get(index).toString());
+        context.write(text_key, text_value);
       }
     }
   }

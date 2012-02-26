@@ -43,6 +43,7 @@ public class SearchVisitMapper extends Mapper<LongWritable, Text, Text, MyMapWri
        value.containsKey(LogParser.IP_ADDRESS) &&
        !value.containsKey(LogParser.IS_BOT) &&
        isValidAccessUrl(value.get(LogParser.ACCESS_URL).toString(), value)){
+      //System.out.println(mapvalue.toString());
       context.write((Text)value.get(LogParser.IP_ADDRESS), value);
     }
   }

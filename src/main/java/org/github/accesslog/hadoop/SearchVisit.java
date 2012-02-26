@@ -20,8 +20,6 @@ import org.github.accesslog.utils.MyMapWritable;
  *
  * @author raimonbosch
  *
- * OUTFORMAT: IP  GOOGLE_QUERY  QUERY  DATE
- *
  */
 public class SearchVisit {
 
