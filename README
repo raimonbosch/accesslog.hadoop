@@ -8,4 +8,6 @@ The output generated is in JSON format. You can run this program either using 'h
 
 TODOs:
 - Include useful information about bot visits.
-- Include information about visits from other search engines like Yahoo, Yandex, AOL, ...
+- Include information about visits from other search engines like Yahoo, Yandex, AOL
+
+See more at http://raimonb.wordpress.com/2012/02/26/going-further-than-google-analytics-with-hadoop-and-your-access-log/
