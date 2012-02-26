@@ -1,0 +1,11 @@
+Extract nice statistics from you accesslog.
+
+The program analyzes an accesslog with hadoop and extracts information for each visit: number of pages viewed, ip address, referer, url accessed url and if the user cames from google it adds more information like google search and google rank.
+
+With this information you can easily generate statistics for your keywords and optimize your seo if you merge this visit data with each keyword. You can calculate bounce rate per keyword, average page views, etc...
+
+The output generated is in JSON format. You can run this program either using 'hadoop -jar' or directly with java in local mode. 
+
+TODOs:
+- Include useful information about bot visits.
+- Include information about visits from other search engines like Yahoo, Yandex, AOL, ...
